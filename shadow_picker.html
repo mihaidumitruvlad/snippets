@@ -1,0 +1,155 @@
+<html>
+<head>
+</head>
+<body>
+	<input id="start" type="text" placeholder="Hex start color"><br>
+	<input id="end" type="text" placeholder="Hex end color"><br>
+	<input id="iterations" type="number" placeholder="Iterations"><br>
+	<br>
+	<button onclick="getColors();">Run</button><br>
+	<br>
+	<span id="shadow" style="display: block; width: 400px; height: auto; border: 1px solid gray; font-size: 12px;">Result shadow script will be here...</span>
+
+<script>
+
+function getColors()
+{
+
+
+startColor = document.getElementById("start").value.toLowerCase();
+endColor = document.getElementById("end").value.toLowerCase();
+iterations = document.getElementById("iterations").value;
+
+
+elems = document.getElementsByTagName("div");
+j = elems.length;
+for (i=0;i<j;i++)
+{
+	if(elems[0])
+			elems[0].remove();
+}
+
+var r_st=0, r_en=0, g_st=0, g_en=0, b_st=0, b_en=0, i=0, ir=0, ig=0, ib=0, j=0; res=[], colres = [], shadow="";
+
+var divshad = document.createElement("div");
+divshad.style.width = "500px";
+divshad.id = "divshadow";
+divshad.innerText = "TEST";
+divshad.style.fontSize="72pt";
+divshad.style.padding = "0 0 0 100px";
+divshad.style.height = "200px";
+divshad.style.color="#ffffff";
+divshad.style.display = "block";
+divshad.style.float = "left";
+
+
+var divm = document.createElement("div");
+divm.id="colors";
+divm.height="auto";
+divm.width="200px";
+divm.style.float = "right";
+
+mat = {'0':0, '1':1, '2':2, '3':3 , '4':4, '5':5, '6':6 ,'7':7, '8':8, '9':9, 'a':10, 'b':11 , 'c':12, 'd':13, 'e':14 ,'f':15};
+
+r_st = mat[startColor[0]]*Math.pow(16,1) + mat[startColor[1]]*Math.pow(16,0);
+r_en = mat[endColor[0]]*Math.pow(16,1) + mat[endColor[1]]*Math.pow(16,0);
+
+g_st = mat[startColor[2]]*Math.pow(16,1) + mat[startColor[3]]*Math.pow(16,0);
+g_en = mat[endColor[2]]*Math.pow(16,1) + mat[endColor[3]]*Math.pow(16,0);
+
+b_st = mat[startColor[4]]*Math.pow(16,1) + mat[startColor[5]]*Math.pow(16,0);
+b_en = mat[endColor[4]]*Math.pow(16,1) + mat[endColor[5]]*Math.pow(16,0);
+
+
+//init result start point
+res[0] = r_st; res[1]=g_st; res[2]=b_st;
+
+//console.log('Start: rgb(' + res[0] + ',' + res[1] + ',' + res[2] + ')');
+
+shadow+='-1px 1px 0 rgb('+res[0]+','+res[1]+','+res[2]+'), ';
+colres.push({"r":r_st,"g":g_st,"b":b_st});
+
+//console.log('End: rgb(' + r_en + ',' + g_en + ',' + b_en + ')');
+
+ir = Math.round(Math.abs(r_st-r_en)/(iterations-2));
+ig = Math.round(Math.abs(g_st-g_en)/(iterations-2));
+ib = Math.round(Math.abs(b_st-b_en)/(iterations-2));
+
+//console.log('Red step: ' + ir);
+//console.log('Green step: ' + ig);
+//console.log('Blue step: ' + ib);
+
+for (i=1;i<=iterations-2;i++)
+{
+	//red
+	if (r_st > r_en)
+		if (res[0]-ir > r_en)
+			res[0]-= ir;
+		else
+			res[0] = r_en;
+	else
+		if (res[0]+ir < r_en)
+			res[0]+= ir;
+		else
+			res[0] = r_en;
+	
+	//green
+	if (g_st > g_en)
+		if (res[1]-ig > g_en)
+			res[1]-=ig;
+		else
+			res[1] = g_en;
+	else
+		if (res[1]+ig < g_en)
+			res[1]+= ig;
+		else
+			res[1] = g_en;
+	
+	//blue
+	if (b_st > b_en)
+		if (res[2]-ib > b_en)
+			res[2]-= ib;
+		else
+			res[2] = b_en;
+	else
+		if (res[2]+ig < b_en)
+			res[2]+= ib;
+		else
+			res[2] = b_en;
+	
+	colres.push({"r":res[0],"g":res[1],"b":res[2]});
+	
+	shadow+='-'+(i+1)+ 'px '+(i+1)+'px 0 rgb('+res[0]+','+res[1]+','+res[2]+'), ';
+	
+}
+
+colres.push({"r":r_en,"g":g_en,"b":b_en});
+shadow+='-' + iterations + 'px ' + iterations + 'px 0 rgb('+r_en+','+g_en+','+b_en+')';
+//console.log('Shadow script: ' + shadow + ';');
+
+for (i=0;i<colres.length;i++)
+{
+
+
+var div = document.createElement("div");
+div.style.width = "150px";
+div.style.height = "50px";
+div.style.background = 'rgb(' + colres[i]["r"] + ',' + colres[i].g + ',' + colres[i].b + ')';
+div.style.display = "block";
+
+divm.append(div);
+
+}
+
+divshad.style.textShadow = shadow;
+document.getElementById('shadow').innerText = "text-shadow: " + shadow + ";";
+
+document.body.append(divshad);
+document.body.append(divm);
+
+return colres;
+
+}
+</script>
+</body>
+</html>
